@@ -1,0 +1,202 @@
+
+
+/* Container principal com layout */
+.container {
+    display: flex;
+    width: 1100px;
+    height: 700px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    background-color: #ffffff;
+
+    /* Centralização */
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Seção da logo */
+.welcome-section {
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    color: white;
+}
+
+.welcome-section h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: whitesmoke;
+}
+
+.welcome-section p {
+    font-size: 1rem;
+    line-height: 1.6;
+    text-align: center;
+    margin-bottom: 40px;
+    color: whitesmoke;
+}
+
+/* Logo estilizada */
+.logo {
+    width: 50%;
+    max-width: 200px;
+    margin-bottom: 20px;
+    filter: saturate(0) brightness(100);
+}
+
+/* Seção de autenticação */
+.auth-section {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+}
+
+.auth-section h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.auth-section p {
+    font-size: 1rem;
+    color: #555;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Estilização dos inputs */
+.auth-section input {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 50px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+    background-color: #f7f7f7;
+    transition: border-color 0.3s ease;
+}
+
+/* Foco no input */
+.auth-section input:focus {
+    outline: none;
+    border-color: #0072ff;
+}
+
+/* Botões de ação */
+.auth-section button {
+    width: 100%;
+    padding: 15px;
+    background-color: #0072ff;
+    color: white;
+    font-size: 1.2rem;
+    border-radius: 50px;
+    cursor: pointer;
+    border: none;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.auth-section button:hover {
+    background-color: #0056b3;
+}
+
+/* Botão secundário */
+.auth-section .secondary-button {
+    background-color: transparent;
+    color: #0072ff;
+    border: 2px solid #0072ff;
+    padding: 15px;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.auth-section .secondary-button:hover {
+    background-color: #0072ff;
+    color: white;
+}
+
+/* Links */
+.auth-section a {
+    color: #0072ff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-section a:hover {
+    text-decoration: underline;
+}
+
+/* Estilização de erro */
+.auth-section .error {
+    color: red;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+/* Layout dos campos de senha e confirmação um ao lado do outro */
+.auth-section .password-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.auth-section .password-container input {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.auth-section .password-container button {
+    flex-basis: 40px;
+    margin-right: 10px;
+    background-color: transparent;
+    color: #0072ff;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* Layout dos campos de telefone e CNPJ lado a lado */
+.auth-section .form-inline {
+    display: flex;
+    justify-content: space-between;
+}
+
+.auth-section .form-inline input {
+    flex: 1;
+    margin-right: 10px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        height: auto;
+        width: 90%;
+    }
+
+    .welcome-section, .auth-section {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .logo {
+        width: 30%;
+    }
+
+    .auth-section button {
+        padding: 12px;
+    }
+}
