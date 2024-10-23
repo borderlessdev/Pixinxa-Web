@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/SideBar/Sidebar";
 import CustomModal from "./CustomModal/customModal";
 import Notification from "./Notification/notification";
@@ -7,10 +7,25 @@ import { collection, getDocs, addDoc } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import "../css/Admin.css";
+import CustomDropdown from "./CustomDropdown/CusotmDropdown";
+
+interface Subcategory {
+  name: string;
+  imageUrl: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  imageUrl: string;
+  icon: string;
+  subcategories: Subcategory[]; // Adicione as subcategorias como uma lista de objetos
+}
 
 // Adiciona a tipagem correta para `children`
 const AdminLayout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const [showUserModal, setShowUserModal] = useState(false);
+  const [categories, setCategories] = useState<any[]>([]);
   const [showStoreModal, setShowStoreModal] = useState(false); // Novo estado para o modal de loja
   const [notification, setNotification] = useState<{
     message: string;
@@ -30,8 +45,12 @@ const AdminLayout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
     cnpj: "",
     telefone: "",
     categoria: "",
+    subcategoria: "",
     logoUrl: "",
   });
+
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("");
 
   const navigate = useNavigate();
 
@@ -208,10 +227,75 @@ const AdminLayout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
     setStoreData({ ...storeData, [name]: files ? files[0] : formattedValue });
   };
 
+  const handleCategorySelect = async (categoryName: string) => {
+    setSelectedCategory(categoryName);
+    setSelectedSubcategory(""); // Limpa a subcategoria quando a categoria muda
+    const category = categories.find((cat) => cat.name === categoryName);
+
+    if (category) {
+      const subcategories = await fetchSubcategories(category.id); // Agora você usa o ID da categoria para buscar subcategorias
+      setStoreData({ ...storeData, categoria: categoryName, subcategoria: "" });
+      setCategories((prev) =>
+        prev.map((cat) =>
+          cat.id === category.id ? { ...cat, subcategories } : cat
+        )
+      );
+    }
+  };
+
+  const handleSubcategorySelect = (subcategoryName: string) => {
+    setSelectedSubcategory(subcategoryName);
+    setStoreData({ ...storeData, subcategoria: subcategoryName });
+  };
+
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setStoreData({ ...storeData, [name]: value });
   };
+
+  const fetchSubcategories = async (categoryId: string) => {
+    try {
+      const querySnapshot = await getDocs(
+        collection(db, `categories/${categoryId}/subcategories`)
+      );
+
+      const fetchedSubcategories = querySnapshot.docs.map((doc) => ({
+        name: doc.data().name,
+        imageUrl: doc.data().imageUrl,
+      }));
+
+      return fetchedSubcategories;
+    } catch (error) {
+      console.error("Erro ao buscar subcategorias:", error);
+      return [];
+    }
+  };
+
+  // Função para buscar as categorias no Firestore
+  const fetchCategories = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "categories"));
+      const fetchedCategories: Category[] = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        console.log("Categoria recuperada:", data); // Verifique se o campo imageUrl está presente
+        return {
+          id: doc.id,
+          name: data.name,
+          imageUrl: data.imageUrl,
+          icon: data.icon,
+          subcategories: data.subcategories || [],
+        };
+      });
+
+      setCategories(fetchedCategories);
+    } catch (error) {
+      console.error("Erro ao buscar categorias:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   return (
     <div className="admin-dashboard-container">
@@ -228,51 +312,61 @@ const AdminLayout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
           onSave={() => criarUsuario(userData)}
           title="Criar Novo Usuário"
         >
-          <div>
-            <label>Nome Completo:</label>
-            <input
-              type="text"
-              name="nomeCompleto"
-              value={userData.nomeCompleto}
-              onChange={handleInputChange}
-              required
-            />
+          <div className="admin-modal-row">
+            <div className="admin-modal-column">
+              <label>Nome Completo:</label>
+              <input
+                type="text"
+                name="nomeCompleto"
+                value={userData.nomeCompleto}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
 
-            <label>Email:</label>
-            <input
-              type="email"
-              name="email"
-              value={userData.email}
-              onChange={handleInputChange}
-              required
-            />
-
-            <label>CPF:</label>
-            <input
-              type="text"
-              name="cpf"
-              value={userData.cpf}
-              onChange={handleInputChange}
-              placeholder="XXX.XXX.XXX-XX"
-              maxLength={14} // Formato do CPF
-              required
-            />
-
-            <label>Telefone:</label>
-            <input
-              type="text"
-              name="telefone"
-              value={userData.telefone}
-              onChange={handleInputChange}
-              placeholder="+XX (XX) XXXXX-XXXX"
-              maxLength={18} // Formato do telefone
-              required
-            />
-
-            <button type="submit" className="custom-button-confirm">
-              Confirmar
-            </button>
+            <div className="admin-modal-column">
+              <label>Email:</label>
+              <input
+                type="email"
+                name="email"
+                value={userData.email}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
           </div>
+
+          <div className="admin-modal-row">
+            <div className="admin-modal-column">
+              <label>CPF:</label>
+              <input
+                type="text"
+                name="cpf"
+                value={userData.cpf}
+                onChange={handleInputChange}
+                placeholder="XXX.XXX.XXX-XX"
+                maxLength={14}
+                required
+              />
+            </div>
+
+            <div className="admin-modal-column">
+              <label>Telefone:</label>
+              <input
+                type="text"
+                name="telefone"
+                value={userData.telefone}
+                onChange={handleInputChange}
+                placeholder="+XX (XX) XXXXX-XXXX"
+                maxLength={18}
+                required
+              />
+            </div>
+          </div>
+
+          <button type="submit" className="custom-button-confirm">
+            Confirmar
+          </button>
         </CustomModal>
       )}
 
@@ -283,73 +377,98 @@ const AdminLayout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
           onSave={() => criarLoja(storeData)}
           title="Criar Nova Loja"
         >
-          <div>
-            <label>Nome Completo:</label>
-            <input
-              type="text"
-              name="nomeCompleto"
-              value={storeData.nomeCompleto}
-              onChange={handleStoreInputChange}
-              required
-            />
+          <div className="admin-modal-row">
+            <div className="admin-modal-column">
+              <label>Nome Completo:</label>
+              <input
+                type="text"
+                name="nomeCompleto"
+                value={storeData.nomeCompleto}
+                onChange={handleStoreInputChange}
+                required
+              />
+            </div>
 
-            <label>Email:</label>
-            <input
-              type="email"
-              name="email"
-              value={storeData.email}
-              onChange={handleStoreInputChange}
-              required
-            />
-
-            <label>CNPJ:</label>
-            <input
-              type="text"
-              name="cnpj"
-              value={storeData.cnpj}
-              onChange={handleStoreInputChange}
-              placeholder="XX.XXX.XXX/XXXX-XX"
-              maxLength={18} // Formato do CNPJ
-              required
-            />
-
-            <label>Telefone:</label>
-            <input
-              type="text"
-              name="telefone"
-              value={storeData.telefone}
-              onChange={handleStoreInputChange}
-              placeholder="+XX (XX) XXXXX-XXXX"
-              maxLength={18} // Formato do telefone
-              required
-            />
-
-            <label>Categoria:</label>
-            <select
-              name="categoria"
-              value={storeData.categoria}
-              onChange={handleSelectChange} 
-              required
-            >
-              <option value="">Selecione uma Categoria</option>
-              <option value="Restaurante">Restaurante</option>
-              <option value="Vestuário">Vestuário</option>
-              <option value="Supermercado">Supermercado</option>
-              <option value="Eletrônicos">Eletrônicos</option>
-            </select>
-
-            <label>Logo:</label>
-            <input
-              type="file"
-              name="logoUrl"
-              accept="image/*"
-              onChange={handleStoreInputChange}
-            />
-
-            <button type="submit" className="custom-button-confirm">
-              Confirmar
-            </button>
+            <div className="admin-modal-column">
+              <label>Email:</label>
+              <input
+                type="email"
+                name="email"
+                value={storeData.email}
+                onChange={handleStoreInputChange}
+                required
+              />
+            </div>
           </div>
+
+          <div className="admin-modal-row">
+            <div className="admin-modal-column">
+              <label>CNPJ:</label>
+              <input
+                type="text"
+                name="cnpj"
+                value={storeData.cnpj}
+                onChange={handleStoreInputChange}
+                placeholder="XX.XXX.XXX/XXXX-XX"
+                maxLength={18}
+                required
+              />
+            </div>
+
+            <div className="admin-modal-column">
+              <label>Telefone:</label>
+              <input
+                type="text"
+                name="telefone"
+                value={storeData.telefone}
+                onChange={handleStoreInputChange}
+                placeholder="+XX (XX) XXXXX-XXXX"
+                maxLength={18}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="admin-modal-row">
+            <div className="admin-modal-column">
+              <label>Categoria:</label>
+              <CustomDropdown
+                categories={categories}
+                selectedCategory={selectedCategory}
+                onSelect={handleCategorySelect}
+              />
+            </div>
+
+            <div className="admin-modal-column">
+              <label>Subcategoria:</label>
+              <CustomDropdown
+                categories={
+                  selectedCategory
+                    ? categories.find(
+                        (category) => category.name === selectedCategory
+                      )?.subcategories || []
+                    : []
+                }
+                selectedCategory={selectedSubcategory}
+                onSelect={handleSubcategorySelect}
+                disabled={!selectedCategory} // Desabilita se nenhuma categoria foi selecionada
+              />
+            </div>
+
+            <div className="admin-modal-column">
+              <label>Logo:</label>
+              <input
+                type="file"
+                name="logoUrl"
+                accept="image/*"
+                onChange={handleStoreInputChange}
+              />
+            </div>
+          </div>
+
+          <button type="submit" className="custom-button-confirm">
+            Confirmar
+          </button>
         </CustomModal>
       )}
 

@@ -7,6 +7,8 @@ import BoasVindas from '../pages/BoasVindas';
 import Admin from '../pages/Admin';
 import Usuarios from '../pages/Usuarios';
 import Lojas from '../pages/Lojas';
+import Maps from '../pages/Maps';
+import CpfPermitidos from '../pages/CpfPermitidos';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -19,6 +21,8 @@ const AppRoutes: React.FC = () => {
         <Route path="/admin" element={<Admin />}/>
         <Route path="/usuarios" element={<Usuarios />}/>
         <Route path="/lojas" element={<Lojas />}/>
+        <Route path="/mapa" element={<Maps />}/>
+        <Route path="/cpf-permitidos" element={<CpfPermitidos />} />
       </Routes>
     </Router>
   );

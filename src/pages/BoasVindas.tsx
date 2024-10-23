@@ -44,6 +44,8 @@ import {
   faCalendarAlt,
   faSmile,
 } from "@fortawesome/free-solid-svg-icons";
+import CustomSideBarLoja from "../components/SideBar/CustomSideBarLoja";
+import CustomFooter from "../components/CustomFooter.tsx/CustomFooter";
 
 const BoasVindas: React.FC = () => {
   const [produtos, setProdutos] = useState<any[]>([]);
@@ -568,84 +570,10 @@ const BoasVindas: React.FC = () => {
         isSidebarExpanded ? "sidebar-expanded" : "sidebar-collapsed"
       }`}
     >
-      <aside
-        className={`sidebar ${isSidebarExpanded ? "expanded" : "collapsed"}`}
-      >
-        <div className="sidebar-header">
-          <button
-            className="toggle-btn"
-            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-          >
-            <FontAwesomeIcon
-              icon={isSidebarExpanded ? faArrowLeft : faArrowRight}
-            />
-          </button>
-          {isSidebarExpanded && (
-            <div className="sidebar-logo-container">
-              {logoUrl && (
-                <img src={logoUrl} alt="Logo" className="sidebar-logo" />
-              )}
-            </div>
-          )}
-        </div>
-
-        <nav className="sidebar-menu">
-          <ul>
-            <li>
-              <button
-                className="menu-btn"
-                onClick={() => setShowProductModal(true)}
-              >
-                <FontAwesomeIcon icon={faBox} />
-                {isSidebarExpanded && <span>Criar Produto</span>}
-              </button>
-            </li>
-            <li>
-              <button
-                className="menu-btn"
-                onClick={() => setShowBusinessRuleModal(true)}
-              >
-                <FontAwesomeIcon icon={faBox} />
-                {isSidebarExpanded && <span>Adicionar Regra de Negócio</span>}
-              </button>
-            </li>
-
-            <li>
-              <button
-                className="menu-btn"
-                onClick={() => setShowUserModal(true)}
-              >
-                <FontAwesomeIcon icon={faUser} />
-                {isSidebarExpanded && <span>Registrar Usuário</span>}
-              </button>
-            </li>
-            <li>
-              <button
-                className="menu-btn"
-                onClick={() => navigate("/produtos")}
-              >
-                <FontAwesomeIcon icon={faStore} />
-                {isSidebarExpanded && <span>Produtos</span>}
-              </button>
-            </li>
-            <li>
-              <button
-                className="menu-btn"
-                onClick={() => setShowEditModal(true)}
-              >
-                <FontAwesomeIcon icon={faHome} />
-                {isSidebarExpanded && <span>Editar Loja</span>}
-              </button>
-            </li>
-            <li>
-              <button className="menu-btn logout-btn" onClick={handleLogout}>
-                <FontAwesomeIcon icon={faSignOutAlt} />
-                {isSidebarExpanded && <span>Logout</span>}
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </aside>
+      <CustomSideBarLoja
+        isSidebarExpanded={isSidebarExpanded}
+        setIsSidebarExpanded={setIsSidebarExpanded}
+      />
 
       <main className="main-content">
         <header className="header">
@@ -656,7 +584,6 @@ const BoasVindas: React.FC = () => {
             <h1>{nomeLoja}</h1>
           </div>
         </header>
-
         <section className="stats-cards">
           <div className="card">
             <h3>Total de Produtos</h3>
@@ -671,7 +598,6 @@ const BoasVindas: React.FC = () => {
             <p>R$ {totalCashback.toFixed(2)}</p>
           </div>
         </section>
-
         <section className="product-list">
           <h2>Produtos</h2>
           <div className="products-container">
@@ -698,7 +624,6 @@ const BoasVindas: React.FC = () => {
             ))}
           </div>
         </section>
-
         <section className="business-rules-list">
           <h2>Regras de Negócio</h2>
           <div className="business-rules-container">

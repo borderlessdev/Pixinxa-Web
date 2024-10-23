@@ -7,6 +7,7 @@ import {
   faBox,
   faSignOutAlt,
   faTachometerAlt,
+  faMapMarkedAlt, // Ícone de mapa
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import "../../css/Admin.css"; // Reutilizando o mesmo CSS para o sidebar
@@ -71,6 +72,17 @@ const Sidebar: React.FC<SidebarProps> = ({ onCreateUserClick, onCreateStoreClick
             >
               <FontAwesomeIcon icon={faStore} />
               <span>Lojas</span>
+            </button>
+          </li>
+          
+          {/* Novo botão para Mapa */}
+          <li>
+            <button
+              className="admin-menu-btn"
+              onClick={() => navigate("/mapa")} // Redireciona para a página de Mapa
+            >
+              <FontAwesomeIcon icon={faMapMarkedAlt} />
+              <span>Mapa</span>
             </button>
           </li>
           <li>
